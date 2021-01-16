@@ -1,0 +1,93 @@
+{% extends 'main/wrapper.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-around">
+        {% if user.is_authenticated %}
+        <div class="col-3"></div>
+        <div class="col-9 text-center mb-5">
+            {% else %}
+            <div class="col-12 text-center mb-5">
+                {% endif %}
+                <span class="subheading">
+                    <h2>
+                        Отзывы
+                    </h2>
+                </span>
+            </div>
+            {% if user.is_authenticated %}
+            <div class="col-lg-4 col-md-6 col-sm-6 mb-5">
+                <div class="card text-center">
+                    <div class="mt-2">
+                        <h1>{{ user.username }}</h1>
+                        <p class="bg-dark w-100 text-light py-2 font-weight-bold">Всего Отзывов:
+                            {{ user.feedback_set.all|length }}
+                        </p>
+                        <div class="mb-3">
+                            <button class="btn btn-primary" type="button" class="btn btn-primary" data-toggle="modal"
+                                data-target="#exampleModalCenter">Оставить Отзыв</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+                    aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">{{ user.username }}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <div class="form-group text-center">
+                                        <h3 style="font-weight: bold;">{{ form.feedback_text.label }}</h3>
+                                        {{ form.feedback_text }}
+                                    </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="cancel" class="btn btn-secondary" data-dismiss="modal">Выйти</button>
+                                <button type="submit" class="btn btn-primary">Добавить Отзыв</button>
+                            </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            <div class="col-8">
+                <div class="row justify-content-center">
+
+                    {% if feedback|length > 0 %}
+                    {% for feedback in feedback %}
+                    <div class="col-lg-6 col-md-8 col-sm-12 mb-3">
+                        <div class="card text-center" style="height: 300px;">
+                            <div class="card-header bg-info pb-1">
+                                <p class="font-weight-bold text-light">{{ feedback.author.first_name }}
+                                    {{ f.author.last_name }}
+                                </p>
+                            </div>
+                            <div class="card-body pb-0">
+                                <p class="card-text align-middle">
+                                    <em>{{ feedback.feedback_text|truncatechars:100 }}</em></p>
+                            </div>
+                            <p class="bg-dark w-100 text-light py-1">
+                                <strong>{{ feedback.date_created|date:"H:i d/m/Y" }}</strong>
+                            </p>
+                            <a class="btn btn-outline-info mb-2" href="{% url 'feedback-detail' feedback.pk %}"
+                                style="color: rgb(33, 74, 88);">Читать дальше</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endblock content %}
